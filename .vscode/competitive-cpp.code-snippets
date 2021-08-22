@@ -1,0 +1,14 @@
+{
+    "input": {
+        "prefix": "in",
+        "body": "input($1);"
+    },
+    "print": {
+        "prefix": "pri",
+        "body": "print($1);"
+    },
+    "arr4": {
+        "prefix": "arr4",
+        "body": "vector<pi> arr4 = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};"
+    }
+}

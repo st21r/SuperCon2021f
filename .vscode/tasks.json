@@ -1,0 +1,29 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "Build&Run solve.cpp",
+            "command": "g++",
+            "args": [
+                "solve.cpp",
+                "-std=c++17",
+                "-D=LOCAL",
+                "-Wall",
+                "-Wextra",
+                "-Wno-unknown-pragmas",
+                "-g",
+                "-fsanitize=undefined",
+                "-D_GLIBCXX_DEBUG",
+                "&&",
+                "./a.out",
+                "<",
+                "input.txt"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
