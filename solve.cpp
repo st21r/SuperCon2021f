@@ -47,11 +47,8 @@ ostream &operator << (ostream &out, const pair<T, U> &a){
     return out;
 }
 
-#ifdef LOCAL
 ofstream dout("./dump.txt");
-#else
-ofstream dout("/dev/null");
-#endif
+
 inline void dump() { dout << "\n"; }
 template <typename T, typename ...U>
 inline void dump(const T &t, const U &...u) {
@@ -62,56 +59,10 @@ inline void dump(const T &t, const U &...u) {
 
 template<typename T> inline bool chmax(T &a, T b) { if (a < b) { a = b; return 1; } return 0; }
 template<typename T> inline bool chmin(T &a, T b) { if (a > b) { a = b; return 1; } return 0; }
-
-namespace util {
-    struct Timer {
-        static const uint64_t CYCLES_PER_SEC = 3e9;
-        uint64_t start;
-    
-        Timer() : start{} { reset(); }
-    
-        void reset() { start = get_cycle(); }
-    
-        inline double get() const { return (double) get_cycle() / CYCLES_PER_SEC; }
-
-    private:
-        inline uint64_t get_cycle() const {
-            unsigned low, high;
-            __asm__ volatile ("rdtsc" : "=a" (low), "=d" (high));
-            return (((uint64_t) low) | ((uint64_t) high << 32ull)) - start;
-        }
-    };
-
-    class XorShift {
-        unsigned x, y, z, w; 
-    public:    
-        XorShift() {
-            x = 123456789;
-            y = 362436069;
-            z = 521288629;
-            w = 88675123;
-        }
-        inline unsigned next() {
-            unsigned t = x ^ (x << 11);
-            x = y; y = z; z = w;
-            return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
-        }
-        unsigned nextInt(int n) {
-            return next() % n;
-        }
-        unsigned nextInt(int l, int r) {
-            return l + (next() % (r - l));
-        }
-        double nextDouble() {
-            return next() / 4294967295.0;
-        }
-    };
-}
-
 #pragma endregion
 
 #include <omp.h>
-#include "mpi.h"
+//#include "mpi.h"
 #include "sc21.h"
 #include "cssl.h"
 
@@ -129,19 +80,98 @@ int C[N_GROUP][N_GROUP]; //出力する隣接行列
 double TIME0;
 */
 
-constexpr int SEED = 0;
-int randInt(int n) {
+vi randInt(int num, int r) {
+    int seed = 0;
+    int icon;
+    double dwork[8];
+    double s[num];
+    vi res(num);
+    c_dm_vranu5(&seed, s, num, (long)0, dwork, &icon);
+    #pragma omp parallel for
+    rep(i, num) {
+        res[i] = (int)(s[i] * r);
+        if (res[i] >= r) {
+            res[i] = 0;
+        }
+    }
+    return res;
+}
+
+vi randInt(int num, int l, int r) {
+    vi res(num);
+    vi &&s = randInt(num, r-l);
+    #pragma omp parallel for
+    rep(i, num) {
+        res[i] = l + s[i];
+    }
+    return res;
+}
+
+void solve() {
     
 }
 
+double calcRSS() {
+    double S[N_GROUP], I[N_GROUP], R[N_GROUP];
+    rep(i, N_GROUP) {
+        S[i] = N[i] - 1;
+        I[i] = 1;
+        R[i] = 0;
+    }
+    rep(i, N_GROUP) {
+        double ni1 = BETA * S[i] * I[i], ni2 = 0, nr = GAMMA * I[i];
+        rep(j, N_GROUP) {
+            if (C[i][j] == 1) {
+                ni2 += I[j];
+            }
+        }
+        ni2 *= BETA2 * S[i];
+        S[i] = S[i] - ni1 - ni2;
+        I[i] = I[i] + ni1 + ni2 - nr;
+        R[i] = R[i] + nr;
+    }
+    double E = 0;
+    rep(i, N_GROUP) {
+        double diff = I[i] - I_PROB[i];
+        E += diff * diff;
+    }
+    return E;
+}
+
 void init() {
+    rep(i, N_GROUP) {
+        rep(j, N_GROUP) {
+            C[i][j] = 0;
+        }
+    }
+    int cnt = 0;
+    while (cnt < N_LINK) {
+        vi p = randInt(2, N_GROUP);
+        int i = p[0], j = p[1];
+        if (C[i][j] == 0 && i != j) {
+            C[i][j] = 1;
+            C[j][i] = 1;
+            cnt++;
+        }
+    }
+    dump("score:", calcRSS());
+    rep(i, N_GROUP) {
+        rep(j, N_GROUP) {
+            dout << C[i][j];
+        }
+        dout << endl;
+    }
+}
+
+namespace Ilag {
     
+
 }
 
 int main() {
     SC_input();
     init();
-    //SC_output();
+    SC_output();
     return 0;
 }
 
