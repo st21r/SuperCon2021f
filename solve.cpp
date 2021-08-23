@@ -25,10 +25,6 @@ using vvi = vector<vi>;
 #define len(a) ((int)(a).size())
 #define all(a) (a).begin(), (a).end()
 #define rall(a) (a).rbegin(), (a).rend()
-#define uni(a) (a).erase(unique(all(a)), (a).end());
-
-constexpr int INF = 1e9;
-constexpr ll LINF = 1e18;
 
 template<typename T>
 istream &operator >> (istream &in, vector<T> &a){
@@ -50,13 +46,7 @@ ostream &operator << (ostream &out, const pair<T, U> &a){
     out << a.first << " " << a.second;
     return out;
 }
-inline void print() { cout << "\n"; }
-template <typename T, typename ...U>
-inline void print(const T &t, const U &...u) {
-    cout << t;
-    if (sizeof...(u)) cout << " ";
-    print(u...);
-}
+
 #ifdef LOCAL
 ofstream dout("./dump.txt");
 #else
@@ -120,14 +110,38 @@ namespace util {
 
 #pragma endregion
 
+#include <omp.h>
+#include "mpi.h"
+#include "sc21.h"
+#include "cssl.h"
+
+/*
+ヘッダーファイル定義一覧
+#define N_GROUP 100
+const double BETA=0.0002;
+const double BETA2=0.000001;
+const double GAMMA=0.1;
+const int T=200;
+int N_LINK; //辺数
+int N[N_GROUP]; //各集団の人数
+double I_PROB[N_GROUP]; //t日目の感染者数
+int C[N_GROUP][N_GROUP]; //出力する隣接行列
+double TIME0;
+*/
+
+constexpr int SEED = 0;
+int randInt(int n) {
+    
+}
+
 void init() {
     
 }
 
 int main() {
-    cin.tie(0);
-    ios::sync_with_stdio(false);
+    SC_input();
     init();
+    //SC_output();
     return 0;
 }
 
