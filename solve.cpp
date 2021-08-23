@@ -48,7 +48,6 @@ ostream &operator << (ostream &out, const pair<T, U> &a){
 }
 
 ofstream dout("./dump.txt");
-
 inline void dump() { dout << "\n"; }
 template <typename T, typename ...U>
 inline void dump(const T &t, const U &...u) {
@@ -79,6 +78,12 @@ double I_PROB[N_GROUP]; //t日目の感染者数
 int C[N_GROUP][N_GROUP]; //出力する隣接行列
 double TIME0;
 */
+
+namespace ilag {
+    
+}
+
+
 
 vi randInt(int num, int r) {
     int seed = 0;
@@ -113,11 +118,15 @@ void solve() {
 
 double calcRSS() {
     double S[N_GROUP], I[N_GROUP], R[N_GROUP];
+    
+    //各集団ではなく0番目の集団のみで最初に一人感染です
     rep(i, N_GROUP) {
         S[i] = N[i] - 1;
         I[i] = 1;
         R[i] = 0;
     }
+    
+    //これだと一日分しか進んでなくないですか
     rep(i, N_GROUP) {
         double ni1 = BETA * S[i] * I[i], ni2 = 0, nr = GAMMA * I[i];
         rep(j, N_GROUP) {
@@ -161,11 +170,6 @@ void init() {
         }
         dout << endl;
     }
-}
-
-namespace Ilag {
-    
-
 }
 
 int main() {
